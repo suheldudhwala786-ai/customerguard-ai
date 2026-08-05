@@ -1,0 +1,75 @@
+openapi: 3.0.3
+info:
+  title: CustomerGuard AI API
+  version: 1.0.0
+  description: Enterprise SaaS API for Churn Prediction & Analytics
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Development Server
+
+paths:
+  /auth/login:
+    post:
+      summary: User Login
+      tags: [Authentication]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: {type: string, format: email}
+                password: {type: string}
+
+  /dashboard:
+    get:
+      summary: Executive Dashboard Metrics
+      tags: [Analytics]
+      security: [{BearerAuth: []}]
+
+  /predictions:
+    post:
+      summary: Generate Churn Prediction
+      tags: [Predictions]
+      security: [{BearerAuth: []}]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customer_id]
+              properties:
+                customer_id: {type: string, format: uuid}
+
+  /customers:
+    get:
+      summary: List Customers
+      tags: [Customers]
+      security: [{BearerAuth: []}]
+      parameters:
+        - name: page
+          in: query
+          schema: {type: integer}
+        - name: limit
+          in: query
+          schema: {type: integer}
+
+  /models/train:
+    post:
+      summary: Trigger Model Training Job
+      tags: [Models]
+      security: [{BearerAuth: []}]
+
+  /system/health:
+    get:
+      summary: Check System Health
+      tags: [System]
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
